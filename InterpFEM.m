@@ -76,7 +76,7 @@ if     (nnpe == 4) && ~is3D
     LMTYPE = 'QUAD4';
 elseif (nnpe == 8) && ~is3D
     LMTYPE = 'QUAD8';
-elseif (nnpe == 8) && is3D
+elseif (nnpe ==  8) && is3D
     LMTYPE = 'BRK8';
 elseif (nnpe == 20) && is3D
     LMTYPE = 'BRK20';
