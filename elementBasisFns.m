@@ -61,28 +61,18 @@ function [ N, dN, d2N ] = basisQ4( xi, eta )
 %
 
 %basis functions
-N1 = 0.25*(1 - xi)*(1 - eta);
-N2 = 0.25*(1 + xi)*(1 - eta);
-N3 = 0.25*(1 + xi)*(1 + eta);
-N4 = 0.25*(1 - xi)*(1 + eta);
-
-N   = [N1; N2; N3; N4];
+N = [0.25*(1 - xi)*(1 - eta);
+	 0.25*(1 + xi)*(1 - eta);
+     0.25*(1 + xi)*(1 + eta);
+     0.25*(1 - xi)*(1 + eta)];
 
 %first derivatives
-%dN# is setup so that, e.g, dN1(i) = dN1,i
-dN1 = [-0.25*(1 - eta), -0.25*(1 - xi)];
-dN2 = [ 0.25*(1 - eta), -0.25*(1 + xi)];
-dN3 = [ 0.25*(1 + eta),  0.25*(1 + xi)];
-dN4 = [-0.25*(1 + eta),  0.25*(1 - xi)];
-
-%assemble results
-
 %dN is setup so that dN(a,j) is the a-th basis function, partial derivative
-%w.r.t. the j-th direction (i.e. N_a,j) 
-dN  = [dN1, 0;
-       dN2, 0;
-       dN3, 0;
-       dN4, 0];
+%w.r.t. the j-th direction (i.e. N_a,j)
+dN = [-0.25*(1 - eta), -0.25*(1 - xi), 0;
+       0.25*(1 - eta), -0.25*(1 + xi), 0;
+       0.25*(1 + eta),  0.25*(1 + xi), 0;
+      -0.25*(1 + eta),  0.25*(1 - xi), 0];
 
 %d2N is setup so that d2N(:,:,k) is dN(:,:)_,k
 d2N(:,:,1) = [0,  0.25, 0;
