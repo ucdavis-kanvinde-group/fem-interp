@@ -6,7 +6,7 @@
 %   Silva, G. H., Le Riche, R., Molimard, J., & Vautrin, A. (2009). 
 %   "Exact and efficient interpolation using finite elements shape 
 %   functions." European Journal of Computational Mechanics/Revue 
-%   Européenne de Mécanique Numérique, 18(3-4), 307-331.
+%   EuropÃ©enne de MÃ©canique NumÃ©rique, 18(3-4), 307-331.
 %
 
 
