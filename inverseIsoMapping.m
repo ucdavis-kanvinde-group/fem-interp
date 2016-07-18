@@ -78,7 +78,7 @@ for p = 1:npts
         %nodesCoords(elemConnect(eind,:),:)
         
         %attempt inverse mapping using optimization algorithm
-        [e_xi_, eflag] = inverseIsoObjFun( points(p,:), ...
+        [e_xi_, eflag] = inverseIsoFun( points(p,:), ...
                               nodesCoords(elemConnect(eind,:),:), LMTYPE );
         
         %check to see if the inverse mapping was successful. use single
