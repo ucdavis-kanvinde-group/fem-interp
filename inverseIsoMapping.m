@@ -3,7 +3,7 @@
 % 4 November 2015
 
 function [ owners, xi_ ] = inverseIsoMapping ...
-                  ( points, elementLabels, elemConnect, nodesCoords, is3D )
+          ( points, elementLabels, elemConnect, nodesCoords, ndim, LMTYPE )
 %Given a set of physical points in the space, determine the FE elements who
 %own those physical points, and perform an inverse isoparametric map into
 %the parent space.
@@ -23,9 +23,9 @@ function [ owners, xi_ ] = inverseIsoMapping ...
 %                  is the nodal coordinates. Row n corresponds to node n
 %                  (i.e. nodesCoords has all nodes in the physical space)
 %
-%   is3D:          Optional boolean flag, designating the dimensionality of
-%                  the input mesh. True (or 1) indicates a 3D mesh, while 
-%                  False (or 0) indicates a 2D mesh
+%   ndim:          number of dimensions of the input mesh
+%
+%   LMTYPE:        string name of the (standard) element type, e.g. 'QUAD4'
 %
 %Outputs --
 %   owners:       (i x 1) cell, where the i-th index corresponds to point
@@ -39,22 +39,8 @@ function [ owners, xi_ ] = inverseIsoMapping ...
 %                 parent coordinates of the owner element owners{i}(1)
 %
 
-
-%use a global variable for MATLAB optimization options, because
-%setting these options takes a significant amount of time... so running
-%this in a loop would take much longer.
-global MYOPTIONS
-
-%use fminunc function with a subspace trust region algorithm
-MYOPTIONS = optimoptions(@fminunc, 'Algorithm','trust-region', ...
-                                   'MaxIter',1000, 'display','off', ...
-                                   'GradObj','on', 'Hessian','on');
-
-
-% determine if problem is 3D or 2D
-if nargin < 5
-    is3D = any(nodesCoords(:,3) ~= 0);
-end
+% check args
+assert((ndim == 2) || (ndim == 3));
 
 % determine number of points requested
 [npts,~] = size(points);
@@ -67,8 +53,13 @@ xi_ = cell(npts,1); % initialize with empty cell array
 
 % for each point, cull possible element ownership to a small subset
 possibleOwners = determineOwnerCandidates ...
-                 ( points, elementLabels, elemConnect, nodesCoords, is3D );
+                 ( points, elementLabels, elemConnect, nodesCoords, ndim );
 
+% define tolerance boundaries using an absolute tolerance. the use of an
+% absolute tolerance is acceptable because the exact boundary is 1 or -1
+upper =  1 + 1e-4;
+lower = -1 - 1e-4;
+             
 % for each point and its corresponding possible owners, perform an inverse
 % isoparametric mapping
 for p = 1:npts
@@ -88,10 +79,11 @@ for p = 1:npts
         
         %attempt inverse mapping using optimization algorithm
         [e_xi_, eflag] = inverseIsoObjFun( points(p,:), ...
-                                nodesCoords(elemConnect(eind,:),:), is3D );
+                              nodesCoords(elemConnect(eind,:),:), LMTYPE );
         
-        %check to see if the inverse mapping was successful
-        if (eflag > 0) && all(e_xi_ <= 1) && all(e_xi_ >= -1)
+        %check to see if the inverse mapping was successful. use single
+        %precision "buffer", because ABAQUS coords are single precision
+        if (eflag > 0) && all(e_xi_ <= upper) && all(e_xi_ >= lower)
             %then the inverse mapping was successful
             %and, this is the owner element of the point!
             
@@ -106,5 +98,5 @@ for p = 1:npts
     end
 end
 
+return;
 end
-

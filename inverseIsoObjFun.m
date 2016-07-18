@@ -10,24 +10,24 @@
 %
 
 
-function [ xi_, eflag ] = inverseIsoObjFun( point, nodCoord, is3D )
+function [ xi_, eflag ] = inverseIsoObjFun( point, nodCoord, LMTYPE )
 %Inverse Isoparametric Mapping Objective Function Optimization
 %using forward mapping and a Subspace Trust Region algorithm
 
-%use a global variable for MATLAB optimization options if possible, because
+%use a persistent variable for MATLAB optimization options, because
 %setting these options takes a significant amount of time... so running
-%this in a loop will take much longer if MYOPTIONS is not set beforehand
-global MYOPTIONS
+%this in a loop will take much longer if MYOPTIONS is reset each time
+persistent MYOPTIONS
 
 if isempty(MYOPTIONS)
-    options = optimoptions(@fminunc, 'Algorithm','trust-region', ...
-                                     'MaxIter',1000, 'display','off', ...
-                                     'GradObj','on', 'Hessian','on'); ...
-                                     %#ok<NASGU>
+    MYOPTIONS = optimoptions(@fminunc, 'Algorithm','trust-region', ...
+                                       'MaxIter',1000, 'display','off', ...
+                                       'GradObj','on', 'Hessian','on',  ...
+                                       'TolX',eps(1), 'TolFun',eps(1));
 end
 
 [xi_, ~, eflag] = fminunc( @(xi_) ...
-                    forwardMappingResid(xi_,point,nodCoord,is3D), ...
+                    forwardMappingResid(xi_,point,nodCoord,LMTYPE), ...
                     [0,0,0], MYOPTIONS );
 
 
@@ -35,30 +35,8 @@ end
 
 
 function [err, grad, Hess] = forwardMappingResid ...
-                                             ( xi_, point, nodCoord, is3D )
+                                          ( xi_, point, nodCoord, LMTYPE )
 %forwardMappingResid - squared sum of the forward mapping residual
-
-%use global variable for element type, for simplicity
-global LMTYPE
-
-%number of nodes
-[nnod, ~] = size(nodCoord);
-
-%define LMTYPE if needed
-if isempty(LMTYPE) || ~ischar(LMTYPE)
-    if     (nnod == 4) && ~is3D
-        LMTYPE = 'QUAD4';
-    elseif (nnod == 8) && ~is3D
-        LMTYPE = 'QUAD8';
-    elseif (nnod ==  8) && is3D
-        LMTYPE = 'BRK8';
-    elseif (nnod == 20) && is3D
-        LMTYPE = 'BRK20';
-    else
-        keyboard
-        error('I haven''t been programmed yet');
-    end
-end
 
 %obtain basis functions
 [N, dN, d2N] = elementBasisFns( xi_, LMTYPE );
@@ -101,5 +79,5 @@ for i = 1:3
     end
 end
 
+return;
 end
-
