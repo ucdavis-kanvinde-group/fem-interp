@@ -10,8 +10,8 @@
 %
 
 
-function [ xi_, eflag ] = inverseIsoObjFun( point, nodCoord, LMTYPE )
-%Inverse Isoparametric Mapping Objective Function Optimization
+function [ xi_, eflag ] = inverseIsoFun( point, nodCoord, LMTYPE )
+%Inverse Isoparametric Mapping Optimization Handler
 %using forward mapping and a Subspace Trust Region algorithm
 
 %use a persistent variable for MATLAB optimization options, because
@@ -31,6 +31,7 @@ end
                     [0,0,0], MYOPTIONS );
 
 
+return;
 end
 
 

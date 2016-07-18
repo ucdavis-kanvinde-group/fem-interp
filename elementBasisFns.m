@@ -45,6 +45,7 @@ switch upper(lmtype)
         error('undefined element type')
 end
 
+return;
 end
 
 
@@ -87,6 +88,7 @@ d2N(:,:,2) = [ 0.25, 0, 0;
 
 d2N(:,:,3) = zeros(4,3);
 
+return;
 end
 
 function [ N, dN, d2N ] = basisQ8( xi, eta )
@@ -157,6 +159,8 @@ d2N(:,:,2) = [ 0.25 - 0.5*(eta + xi), 0.5*(1 - xi), 0;
                                  eta,   - (1 - xi), 0];
 
 d2N(:,:,3) = zeros(8,3);
+
+return;
 end
 
 function [ N, dN, d2N ] = basisBRK8( xi, eta, zta )
@@ -229,6 +233,7 @@ d2N(:,:,3) = [ 0.125*(1 - eta),  0.125*(1 - xi),  0;
                0.125*(1 + eta),  0.125*(1 + xi),  0;
               -0.125*(1 + eta),  0.125*(1 - xi),  0];
 
+return;
 end
 
 function [ N, dN, d2N ] = basisBRK20( xi, eta, zta )
@@ -467,4 +472,5 @@ d2N(:,:,3) = [ d2N1(5),  d2N1(4),  d2N1(3);
               d2N19(5), d2N19(4), d2N19(3);
               d2N20(5), d2N20(4), d2N20(3)];
 
+return;
 end
